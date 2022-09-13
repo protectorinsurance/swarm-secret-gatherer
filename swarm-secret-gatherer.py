@@ -17,7 +17,7 @@ args = vars(parser.parse_args())
 host = args['manager']
 username = args['username']
 password = args['password']
-
+anyemptyfiles = False
 def validate():
     try:
         if host == "Null" or host == "":
@@ -90,6 +90,8 @@ def create_secrets_dir():
     try:
         if not (os.path.isdir('secrets')):
             os.mkdir('secrets')
+        if not (os.path.isdir('empty-secrets')):
+            os.mkdir('empty-secrets')
     except Exception as e:
         print("Could not create secrets subdir: ", e.__class__)
         exit(1)
@@ -117,9 +119,16 @@ def main():
                         for secret in _worker_commands[worker]:
                             if "ucp-" in secret:
                                 raise ValueError("Skipping UCP (MKE) system secrets.")
-                            with open(f'secrets/{secret}.txt','w') as file:
-                                file.write(execute_command(_worker_commands[worker][secret], client))
-                                print(f"{secret}.txt created.")
+                            temp = execute_command(_worker_commands[worker][secret], client)
+                            if temp == '':
+                                with open(f'empty-secrets/{secret}.txt','w') as file:
+                                    file.write(temp)
+                                    print(f"{secret}.txt is empty and moved to empty-secrets directory.")
+                                    anyemptyfiles = True
+                            else:
+                                with open(f'secrets/{secret}.txt','w') as file:
+                                    file.write(temp)
+                                    print(f"{secret}.txt created.")
 
                     except (FileNotFoundError,FileExistsError, ValueError) as e:
                         print(e)
@@ -139,3 +148,6 @@ def main():
 
 validate()
 main()
+
+if anyemptyfiles:
+    print("\nSome secrets returned empty values and has to be handled manually. You can find the secrets in the \"empty-secrets\" directory.")
