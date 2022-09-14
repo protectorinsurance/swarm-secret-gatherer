@@ -1,4 +1,5 @@
 .idea
 empty-secrets
 secrets
+k8s-secrets
 venv
