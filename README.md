@@ -15,3 +15,27 @@ The script will gather all secret info and dump all secrets in a folder relative
 Run the following command:
 <br/>
 python swarm-secret-gatherer.py -m "managerhostname" -u "username" -p "secretpassword"
+
+---
+
+# convert-to-k8s-secrets script
+
+The second script will read all files created from the swarm-secret-gatherer script and create kubernetes compliant secrets.
+They will, however, only contain a single key:value pair. </br>
+
+The format is as follows:
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-secret
+type: Opaque
+stringData:
+  content: |-
+    database=somehost
+    apikey=hashedkey
+    username=myuser
+    password=secretpassword
+
+```
