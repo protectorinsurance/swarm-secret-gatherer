@@ -1,3 +1,6 @@
+The scripts in this repo will gather and export all running secrets in a Docker Swarm cluster, and can be rewritten to Kubernetes compliant opaque secrets.
+
+---
 # swarm-secret-gatherer script
 The script will gather all secret info and dump all secrets in a folder relative to where the current workdir is.
 <br/>Requirements for the script to work:
